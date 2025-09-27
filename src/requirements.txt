@@ -1,0 +1,2 @@
+# Project dependencies
+huggingface_hub>=0.14.0
