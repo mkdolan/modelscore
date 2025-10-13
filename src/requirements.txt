@@ -1,2 +1,5 @@
 # Project dependencies
 huggingface_hub>=0.14.0
+requests>=2.25.0
+pandas>=1.3.0 #no longer needed
+openpyxl>=3.0.0 #no longer needed
