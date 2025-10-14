@@ -21,7 +21,7 @@ def get_model_info(model_name: str):
     return api.model_info(model_name, securityStatus=True)
 
 
-def export_model_info_to_csv(model_info, csv_path: str = "model_info.csv") -> None:
+def export_model_info_to_csv(model_info, csv_path: str = "../model_scores/{model_name}model_info.csv") -> None:
     """Export a model_info object to a CSV file as key-value pairs.
 
     Args:
@@ -35,7 +35,7 @@ def export_model_info_to_csv(model_info, csv_path: str = "model_info.csv") -> No
             writer.writerow([key, value])
 
 
-def query_and_export_model(model_name: str, csv_path: str = "model_info.csv") -> None:
+def query_and_export_model(model_name: str, csv_path: str = "../model_scores/{model_name}model_info.csv") -> None:
     """Convenience function to fetch model info and export it to CSV.
 
     Args:

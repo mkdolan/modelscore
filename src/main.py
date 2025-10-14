@@ -4,7 +4,7 @@ Main entry point for the Python project
 """
 
 import sys
-from model_query import get_model_info, export_model_info_to_csv, query_and_export_model
+from hf_model_query import get_model_info, export_model_info_to_csv, query_and_export_model
 from hf_user_query import query_user_overview, append_user_info_to_csv
 
 def main():
@@ -26,14 +26,14 @@ def main():
         owner_name = model_name.split('/')[0]
         print(f"Querying owner information for: {owner_name}")
 
-        export_model_info_to_csv(info, '../model_scores/model_info.csv')
+        export_model_info_to_csv(info, f'../model_scores/{owner_name}_model_info.csv')
         print("Model information exported to model_info.csv")
         
         # Query user/owner information and append to CSV
         user_info = query_user_overview(owner_name)
         if user_info:
             print("Owner information retrieved successfully")
-            append_user_info_to_csv(user_info, 'model_info.csv')
+            append_user_info_to_csv(user_info, f'../model_scores/{owner_name}_model_info.csv')
             print("Owner information appended to model_info.csv")
         else:
             print("Failed to retrieve owner information")
