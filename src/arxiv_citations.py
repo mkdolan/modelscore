@@ -23,9 +23,10 @@ Notes:
   * Requires: Python 3.8+, 'requests' library.
 
 Usage:
-  python arxiv_citations.py arxiv:2204.05149
-  python arxiv_citations.py 2204.05149
-  python arxiv_citations.py https://arxiv.org/abs/2204.05149
+  python3 arxiv_citations.py arxiv:2407.21783
+  python3 arxiv_citations.py 2204.05149
+  python3 arxiv_citations.py https://arxiv.org/abs/2204.05149
+  
 
 Output:
   Prints a single line like:
@@ -50,11 +51,12 @@ def normalize_arxiv_id(s: str) -> str:
     s = s.strip()
     # Accept prefixes like 'arxiv:' or URLs
     s = re.sub(r'(?i)^arxiv:\s*', '', s)
-    m = re.match(r'https?://arxiv\.org/(abs|pdf)/([0-9]{4}\.\d{5})(v\d+)?', s, re.I)
+    m = re.match(r'https?://arxiv\.org/(abs|pdf)/([0-9]{4}\.\d{4,5})(v\d+)?', s, re.I)
     if m:
         return m.group(2)
-    # Plain ID like 2204.05149 or with version
-    m = re.match(r'^([0-9]{4}\.\d{5})(?:v\d+)?$', s)
+    # Plain ID like 2204.05149 or 1007.5017 (old format) or with version
+    # arXiv IDs can have 4-5 digits after the decimal point
+    m = re.match(r'^([0-9]{4}\.\d{4,5})(?:v\d+)?$', s)
     if m:
         return m.group(1)
     raise ValueError(f"Couldn't parse an arXiv ID from: {s}")
