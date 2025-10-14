@@ -26,7 +26,7 @@ def main():
         owner_name = model_name.split('/')[0]
         print(f"Querying owner information for: {owner_name}")
 
-        export_model_info_to_csv(info, 'model_info.csv')
+        export_model_info_to_csv(info, '../model_scores/model_info.csv')
         print("Model information exported to model_info.csv")
         
         # Query user/owner information and append to CSV

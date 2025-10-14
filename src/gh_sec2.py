@@ -189,7 +189,7 @@ def main():
     if not owner or not repo:
         sys.exit("Usage: gh_sec2.py <owner/repo | owner repo> [output.csv]")
 
-    out_csv = out_csv or f"security_checklist_{owner}_{repo}.csv"
+    out_csv = out_csv or f"../model_scores/security_checklist_{owner}_{repo}.csv"
 
     rows = collect(owner, repo)
     path = write_csv(rows, out_csv)
