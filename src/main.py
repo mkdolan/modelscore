@@ -5,7 +5,7 @@ Main entry point for the Python project
 
 import sys
 from model_query import get_model_info, export_model_info_to_csv, query_and_export_model
-from user_query import query_user_overview, append_user_info_to_csv
+from hf_user_query import query_user_overview, append_user_info_to_csv
 
 def main():
     """Main function"""
