@@ -90,7 +90,7 @@ class ModelProcessor:
         """Process HuggingFace model information.
         
         Args:
-            hf_model_name: HuggingFace model name
+            hf_model_name: HuggingFace model name such as "owner/model"
             row_number: Row number from the model list map file
             
         Returns:
@@ -121,16 +121,28 @@ class ModelProcessor:
             else:
                 self.logger.info(f"Detected {owner_name} as user")
                 user_info = query_user_overview(owner_name)
-                if user_info:
-                    append_user_info_to_excel(user_info, excel_manager, row_number)
+            
+                if isinstance(user_info, dict):
+                    cleaned_user_info = {}
+                    for k, v in user_info.items():
+                        # Replace empty lists or dicts with empty string
+                        if v == [] or v == {}:
+                            cleaned_user_info[k] = ""
+                        # Convert non-empty lists/dicts to a readable string
+                        elif isinstance(v, (list, dict)):
+                            cleaned_user_info[k] = str(v)
+                        else:
+                            cleaned_user_info[k] = v
+
+                    append_user_info_to_excel(cleaned_user_info, excel_manager, row_number, owner_name)
                     self.logger.info("User information appended to Excel")
                 else:
-                    self.logger.warning("Failed to retrieve HuggingFace user information")
+                    self.logger.warning(f"No valid HuggingFace user information for {owner_name}: {type(user_info)}")
             
             return True
             
         except Exception as e:
-            self.logger.error(f"Error processing HuggingFace model {hf_model_name}: {e}")
+            self.logger.error(f"Error processing HuggingFace model {hf_model_name}: {e}: {user_info}")
             return False
     
     def _process_github_security(self, github_repo: str, hf_model_name: str, row_number: int) -> bool:

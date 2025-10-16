@@ -32,7 +32,7 @@ def query_user_overview(user_name):
         return None
 
 def append_user_info_to_excel(user_info: Dict[str, Any], excel_manager: ExcelManager, 
-                             row_number: int) -> None:
+                             row_number: int, user_name: str) -> None:
     """
     Append user information to the Excel file as a new tab
     
@@ -40,6 +40,7 @@ def append_user_info_to_excel(user_info: Dict[str, Any], excel_manager: ExcelMan
         user_info (dict): User information from the API
         excel_manager (ExcelManager): Excel manager instance
         row_number (int): Row number from the model list map file
+        user_name (str): The username that was queried
     """
     if not user_info:
         return
@@ -50,6 +51,9 @@ def append_user_info_to_excel(user_info: Dict[str, Any], excel_manager: ExcelMan
     # Create row-based data structure
     user_data = []
     
+    # Add the User Name row first
+    user_data.append({"Label": "User Name", "Value": user_name})
+
     # Add each key-value pair as a separate row
     for key, value in user_info.items():
         user_data.append({"Label": key, "Value": value})
