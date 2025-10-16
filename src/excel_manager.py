@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """
 Excel file management for ModelScore application.
 Handles multi-tab Excel files with timestamped filenames.
