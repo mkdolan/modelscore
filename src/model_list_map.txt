@@ -1,4 +1,4 @@
 # format: HuggingFace Name, GitHub org/repo
-meta-llama/Llama-4-Scout-17B-16E-Instruct, meta-llama/llama-models4
+meta-llama/Llama-4-Scout-17B-16E-Instruct, meta-llama/llama-models
 meta-llama/Llama-4-Scout-17B-16E, meta-llama/llama-models
 meta-llama/Llama-4-Maverick-17B-128E-Instruct, meta-llama/llama-models

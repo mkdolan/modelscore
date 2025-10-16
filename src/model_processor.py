@@ -4,10 +4,12 @@ Model processing logic for the ModelScore application.
 """
 
 import logging
+import requests
 from pathlib import Path
 from typing import Tuple, Optional
 from hf_model_query import get_model_info, export_model_info_to_csv
 from hf_user_query import query_user_overview, append_user_info_to_csv
+from hf_org_query import get_all_org_info, append_org_info_to_csv
 from gh_sec2 import query_github_security
 from config import Config
 
@@ -19,6 +21,40 @@ class ModelProcessor:
         """Initialize the model processor with configuration."""
         self.config = config
         self.logger = logging.getLogger(__name__)
+    
+    def _is_organization(self, owner_name: str) -> bool:
+        """Check if an owner name is an organization or user.
+        
+        Args:
+            owner_name: The HuggingFace owner name to check
+            
+        Returns:
+            bool: True if it's an organization, False if it's a user
+        """
+        try:
+            # Try user endpoint first
+            user_url = f"https://huggingface.co/api/users/{owner_name}/overview"
+            user_response = requests.get(user_url)
+            
+            if user_response.status_code == 200:
+                return False  # It's a user
+            elif user_response.status_code == 404:
+                # Try organization endpoint
+                org_url = f"https://huggingface.co/api/organizations/{owner_name}/overview"
+                org_response = requests.get(org_url)
+                
+                if org_response.status_code == 200:
+                    return True  # It's an organization
+                else:
+                    self.logger.warning(f"Could not determine if {owner_name} is user or organization")
+                    return False  # Default to user
+            else:
+                self.logger.warning(f"Unexpected status code {user_response.status_code} for user {owner_name}")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error checking owner type for {owner_name}: {e}")
+            return False  # Default to user
     
     def process_model(self, hf_model_name: str, github_repo: str) -> bool:
         """Process a single model by querying HuggingFace and GitHub APIs.
@@ -68,13 +104,23 @@ class ModelProcessor:
             export_model_info_to_csv(info, str(csv_path))
             self.logger.info(f"Model information exported to {csv_path}")
             
-            # Get and append user information
-            user_info = query_user_overview(owner_name)
-            if user_info:
-                append_user_info_to_csv(user_info, str(csv_path))
-                self.logger.info("Owner information appended to CSV")
+            # Get and append owner information (user or organization)
+            if self._is_organization(owner_name):
+                self.logger.info(f"Detected {owner_name} as organization")
+                owner_info = get_all_org_info(owner_name)
+                if owner_info:
+                    append_org_info_to_csv(owner_info, str(csv_path))
+                    self.logger.info("Organization information appended to CSV")
+                else:
+                    self.logger.warning("Failed to retrieve HuggingFace organization information")
             else:
-                self.logger.warning("Failed to retrieve HuggingFace owner information")
+                self.logger.info(f"Detected {owner_name} as user")
+                user_info = query_user_overview(owner_name)
+                if user_info:
+                    append_user_info_to_csv(user_info, str(csv_path))
+                    self.logger.info("User information appended to CSV")
+                else:
+                    self.logger.warning("Failed to retrieve HuggingFace user information")
             
             return True
             
