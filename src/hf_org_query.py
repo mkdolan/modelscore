@@ -169,26 +169,23 @@ def append_org_info_to_excel(org_info, excel_manager, row_number):
     # Create tab name
     tab_name = f"{row_number}-HF-org"
     
-    # Flatten the organization info for Excel storage
-    flattened_info = {}
+    # Create row-based data structure
+    org_data = []
     
     # Add basic org info
-    flattened_info["org_name"] = org_info.get("org_name", "")
+    org_data.append({"Label": "org_name", "Value": org_info.get("org_name", "")})
     
     # Add overview info if available
     if org_info.get("overview"):
         overview = org_info["overview"]
         for key, value in overview.items():
-            flattened_info[f"overview_{key}"] = value
+            org_data.append({"Label": f"overview_{key}", "Value": value})
     
     # Add counts for different resource types
-    flattened_info["members_count"] = len(org_info.get("members", [])) if org_info.get("members") else 0
-    flattened_info["models_count"] = len(org_info.get("models", [])) if org_info.get("models") else 0
-    flattened_info["datasets_count"] = len(org_info.get("datasets", [])) if org_info.get("datasets") else 0
-    flattened_info["spaces_count"] = len(org_info.get("spaces", [])) if org_info.get("spaces") else 0
-    
-    # Convert to list format for Excel
-    org_data = [flattened_info]
+    org_data.append({"Label": "members_count", "Value": len(org_info.get("members", [])) if org_info.get("members") else 0})
+    org_data.append({"Label": "models_count", "Value": len(org_info.get("models", [])) if org_info.get("models") else 0})
+    org_data.append({"Label": "datasets_count", "Value": len(org_info.get("datasets", [])) if org_info.get("datasets") else 0})
+    org_data.append({"Label": "spaces_count", "Value": len(org_info.get("spaces", [])) if org_info.get("spaces") else 0})
     
     # Use Excel manager to create the tab
     excel_manager.create_tab_from_csv_data(tab_name, org_data)
@@ -209,28 +206,28 @@ def append_org_info_to_csv(org_info, csv_file_path):
     # Check if CSV file exists
     file_exists = Path(csv_file_path).exists()
     
-    # Flatten the organization info for CSV storage
-    flattened_info = {}
+    # Create row-based data structure
+    org_data = []
     
     # Add basic org info
-    flattened_info["org_name"] = org_info.get("org_name", "")
+    org_data.append({"Label": "org_name", "Value": org_info.get("org_name", "")})
     
     # Add overview info if available
     if org_info.get("overview"):
         overview = org_info["overview"]
         for key, value in overview.items():
-            flattened_info[f"overview_{key}"] = value
+            org_data.append({"Label": f"overview_{key}", "Value": value})
     
     # Add counts for different resource types
-    flattened_info["members_count"] = len(org_info.get("members", [])) if org_info.get("members") else 0
-    flattened_info["models_count"] = len(org_info.get("models", [])) if org_info.get("models") else 0
-    flattened_info["datasets_count"] = len(org_info.get("datasets", [])) if org_info.get("datasets") else 0
-    flattened_info["spaces_count"] = len(org_info.get("spaces", [])) if org_info.get("spaces") else 0
+    org_data.append({"Label": "members_count", "Value": len(org_info.get("members", [])) if org_info.get("members") else 0})
+    org_data.append({"Label": "models_count", "Value": len(org_info.get("models", [])) if org_info.get("models") else 0})
+    org_data.append({"Label": "datasets_count", "Value": len(org_info.get("datasets", [])) if org_info.get("datasets") else 0})
+    org_data.append({"Label": "spaces_count", "Value": len(org_info.get("spaces", [])) if org_info.get("spaces") else 0})
     
     # Open CSV file in append mode
     with open(csv_file_path, 'a', newline='', encoding='utf-8') as csvfile:
-        # Get all keys from flattened_info to use as fieldnames
-        fieldnames = list(flattened_info.keys())
+        # Define fieldnames for the row-based format
+        fieldnames = ["Label", "Value"]
         
         # Create CSV writer
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -239,8 +236,9 @@ def append_org_info_to_csv(org_info, csv_file_path):
         if not file_exists:
             writer.writeheader()
             
-        # Write organization info
-        writer.writerow(flattened_info)
+        # Write each row of organization info
+        for row in org_data:
+            writer.writerow(row)
 
 def main():
     """Main function"""

@@ -45,8 +45,12 @@ def append_user_info_to_excel(user_info: Dict[str, Any], excel_manager: ExcelMan
     # Create tab name
     tab_name = f"{row_number}-HF-user"
     
-    # Convert user info to list format for Excel
-    user_data = [user_info]
+    # Create row-based data structure
+    user_data = []
+    
+    # Add each key-value pair as a separate row
+    for key, value in user_info.items():
+        user_data.append({"Label": key, "Value": value})
     
     # Use Excel manager to create the tab
     excel_manager.create_tab_from_csv_data(tab_name, user_data)
@@ -67,10 +71,17 @@ def append_user_info_to_csv(user_info, csv_file_path):
     # Check if CSV file exists
     file_exists = Path(csv_file_path).exists()
     
+    # Create row-based data structure
+    user_data = []
+    
+    # Add each key-value pair as a separate row
+    for key, value in user_info.items():
+        user_data.append({"Label": key, "Value": value})
+    
     # Open CSV file in append mode
     with open(csv_file_path, 'a', newline='', encoding='utf-8') as csvfile:
-        # Get all keys from user_info to use as fieldnames
-        fieldnames = list(user_info.keys())
+        # Define fieldnames for the row-based format
+        fieldnames = ["Label", "Value"]
         
         # Create CSV writer
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -79,8 +90,9 @@ def append_user_info_to_csv(user_info, csv_file_path):
         if not file_exists:
             writer.writeheader()
             
-        # Write user info
-        writer.writerow(user_info)
+        # Write each row of user info
+        for row in user_data:
+            writer.writerow(row)
 
 def main():
     """Main function"""
