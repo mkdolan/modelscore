@@ -21,13 +21,13 @@ def get_model_info(model_name: str):
     return api.model_info(model_name, securityStatus=True)
 
 
-def export_model_info_to_excel(model_info, excel_manager: ExcelManager, model_name: str) -> None:
+def export_model_info_to_excel(model_info, excel_manager: ExcelManager, row_number: int) -> None:
     """Export a model_info object to an Excel tab as key-value pairs.
 
     Args:
         model_info: The object returned by get_model_info.
         excel_manager: ExcelManager instance to write to.
-        model_name: Model name for the tab name.
+        row_number: Row number from the model list map file.
     """
     # Convert model info to dictionary format
     model_data = {}
@@ -35,7 +35,7 @@ def export_model_info_to_excel(model_info, excel_manager: ExcelManager, model_na
         model_data[key] = value
     
     # Create tab name
-    tab_name = f"{model_name}_model_info"
+    tab_name = f"{row_number}-HF-model"
     
     # Use Excel manager to create the tab
     excel_manager.create_tab_from_key_value_pairs(tab_name, model_data)

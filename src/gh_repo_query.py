@@ -4,8 +4,8 @@ GitHub Org + Repo Security Evaluation Checklist -> CSV
 
 Usage:
   export GITHUB_TOKEN=ghp_...  # optional but recommended (repo, read:org, security_events)
-  python gh_sec2.py pytorch pytorch  # owner repo
-  python gh_sec2.py <owner> <repo> [out.csv]
+  python gh_repo_query.py pytorch pytorch  # owner repo
+  python gh_repo_query.py <owner> <repo> [out.csv]
 
 Outputs:
   security_checklist_<owner>_<repo>.csv (or provided out.csv)
@@ -185,7 +185,7 @@ def write_csv(rows: List[Dict[str, str]], path: str) -> str:
     return path
 
 
-def query_github_security_to_excel(owner: str, repo: str, excel_manager, model_name: str) -> None:
+def query_github_security_to_excel(owner: str, repo: str, excel_manager, row_number: int) -> None:
     """
     Query GitHub repository security information and export to Excel tab.
     
@@ -193,7 +193,7 @@ def query_github_security_to_excel(owner: str, repo: str, excel_manager, model_n
         owner: GitHub repository owner
         repo: GitHub repository name
         excel_manager: ExcelManager instance
-        model_name: Model name for tab naming
+        row_number: Row number from the model list map file
         
     Returns:
         None
@@ -201,7 +201,7 @@ def query_github_security_to_excel(owner: str, repo: str, excel_manager, model_n
     rows = collect(owner, repo)
     
     # Create tab name
-    tab_name = f"{model_name}_github_security"
+    tab_name = f"{row_number}-GH-repo"
     
     # Use Excel manager to create the tab
     excel_manager.create_tab_from_csv_data(tab_name, rows)
@@ -231,7 +231,7 @@ def query_github_security(owner: str, repo: str, output_dir: str = "../model_sco
 def main():
     owner, repo, out_csv = _parse_owner_repo_args(sys.argv)
     if not owner or not repo:
-        sys.exit("Usage: gh_sec2.py <owner/repo | owner repo> [output.csv]")
+        sys.exit("Usage: gh_repo_query.py <owner/repo | owner repo> [output.csv]")
 
     out_csv = out_csv or f"../model_scores/security_checklist_{owner}_{repo}.csv"
 

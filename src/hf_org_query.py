@@ -154,20 +154,20 @@ def get_all_org_info(org_name):
     
     return all_info
 
-def append_org_info_to_excel(org_info, excel_manager, model_name):
+def append_org_info_to_excel(org_info, excel_manager, row_number):
     """
     Append organization information to the Excel file as a new tab
     
     Args:
         org_info (dict): Organization information from the API
         excel_manager (ExcelManager): Excel manager instance
-        model_name (str): Model name for tab naming
+        row_number (int): Row number from the model list map file
     """
     if not org_info:
         return
     
     # Create tab name
-    tab_name = f"{model_name}_org_info"
+    tab_name = f"{row_number}-HF-org"
     
     # Flatten the organization info for Excel storage
     flattened_info = {}

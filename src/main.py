@@ -85,7 +85,7 @@ def main():
     for i, (hf_model_name, github_repo) in enumerate(models, 1):
         logger.info(f"Processing model {i}/{len(models)}")
         
-        if processor.process_model(hf_model_name, github_repo):
+        if processor.process_model(hf_model_name, github_repo, i):
             successful += 1
         else:
             failed += 1

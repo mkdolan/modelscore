@@ -54,14 +54,14 @@ class ExcelManager:
         # - Cannot be empty
         
         # Replace invalid characters
-        invalid_chars = ['/', '\\', '?', '*', '[', ']']
+        invalid_chars = ['/', '\\', '?', '*', '[', ']', ' ']
         sanitized = name
         for char in invalid_chars:
             sanitized = sanitized.replace(char, '_')
         
         # Truncate if too long
-        if len(sanitized) > 31:
-            sanitized = sanitized[:31]
+        if len(sanitized) > 30:
+            sanitized = sanitized[:30]
         
         # Ensure not empty
         if not sanitized:

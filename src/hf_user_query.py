@@ -30,20 +30,20 @@ def query_user_overview(user_name):
         return None
 
 def append_user_info_to_excel(user_info: Dict[str, Any], excel_manager: ExcelManager, 
-                             model_name: str) -> None:
+                             row_number: int) -> None:
     """
     Append user information to the Excel file as a new tab
     
     Args:
         user_info (dict): User information from the API
         excel_manager (ExcelManager): Excel manager instance
-        model_name (str): Model name for tab naming
+        row_number (int): Row number from the model list map file
     """
     if not user_info:
         return
     
     # Create tab name
-    tab_name = f"{model_name}_user_info"
+    tab_name = f"{row_number}-HF-user"
     
     # Convert user info to list format for Excel
     user_data = [user_info]
