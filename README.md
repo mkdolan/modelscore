@@ -5,11 +5,16 @@ ModelScore2 is a comprehensive tool for analyzing and scoring machine learning m
 ### Usage
 
 ```bash
-# Set GitHub token for enhanced API access
-export GITHUB_TOKEN=your_github_token
+# Do this one time to set GitHub and HuggingFace tokens for enhanced API access
+echo 'export GITHUB_TOKEN=your_github_token' >> ~/.zshrc
+echo 'export HF_TOKEN=your_hf_token' >> ~/.zshrc
+source ~/.zshrc
+
+# Do this one time to install all required packages
+pip3 install -r requirements.txt
 
 # Run the analysis
-python main.py
+python3 main.py
 ```
 
 The application will process all models defined in `model_list_map.txt` and generate a comprehensive Excel report in the `model_scores/` directory.
