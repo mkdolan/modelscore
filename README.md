@@ -2,6 +2,18 @@
 
 ModelScore2 is a comprehensive tool for analyzing and scoring machine learning models by gathering data from both HuggingFace and GitHub APIs. The application collects detailed information about models, their creators (users or organizations), and associated GitHub repositories to provide insights into model quality, security, and development practices.
 
+### Usage
+
+```bash
+# Set GitHub token for enhanced API access
+export GITHUB_TOKEN=your_github_token
+
+# Run the analysis
+python main.py
+```
+
+The application will process all models defined in `model_list_map.txt` and generate a comprehensive Excel report in the `model_scores/` directory.
+
 ## How it Works
 
 ### Model Definition (`model_list_map.txt`)
@@ -68,15 +80,5 @@ The application generates a timestamped Excel file with organized tabs:
 
 Where `{N}` corresponds to the row number from the model list file.
 
-## Usage
 
-```bash
-# Set GitHub token for enhanced API access (optional)
-export GITHUB_TOKEN=your_github_token
-
-# Run the analysis
-python main.py
-```
-
-The application will process all models defined in `model_list_map.txt` and generate a comprehensive Excel report in the `model_scores/` directory.
 
