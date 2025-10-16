@@ -184,6 +184,25 @@ def write_csv(rows: List[Dict[str, str]], path: str) -> str:
     return path
 
 
+def query_github_security(owner: str, repo: str, output_dir: str = "../model_scores") -> str:
+    """
+    Query GitHub repository security information and export to CSV.
+    
+    Args:
+        owner: GitHub repository owner
+        repo: GitHub repository name
+        output_dir: Directory to save the CSV file
+        
+    Returns:
+        Path to the created CSV file
+    """
+    rows = collect(owner, repo)
+    out_csv = f"{output_dir}/security_checklist_{owner}_{repo}.csv"
+    path = write_csv(rows, out_csv)
+    print(f"GitHub security data written: {len(rows)} rows to {path}")
+    return path
+
+
 def main():
     owner, repo, out_csv = _parse_owner_repo_args(sys.argv)
     if not owner or not repo:
