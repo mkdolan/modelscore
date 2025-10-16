@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Query HuggingFace API for user information and append to CSV
+Query HuggingFace API for user information and append to Excel
 """
 
 import requests
 import csv
 from pathlib import Path
+from typing import Dict, Any, Optional
+from excel_manager import ExcelManager
 
 def query_user_overview(user_name):
     """
@@ -27,9 +29,33 @@ def query_user_overview(user_name):
         print(f"Error querying Hugging Face API: {e}")
         return None
 
+def append_user_info_to_excel(user_info: Dict[str, Any], excel_manager: ExcelManager, 
+                             model_name: str) -> None:
+    """
+    Append user information to the Excel file as a new tab
+    
+    Args:
+        user_info (dict): User information from the API
+        excel_manager (ExcelManager): Excel manager instance
+        model_name (str): Model name for tab naming
+    """
+    if not user_info:
+        return
+    
+    # Create tab name
+    tab_name = f"{model_name}_user_info"
+    
+    # Convert user info to list format for Excel
+    user_data = [user_info]
+    
+    # Use Excel manager to create the tab
+    excel_manager.create_tab_from_csv_data(tab_name, user_data)
+
 def append_user_info_to_csv(user_info, csv_file_path):
     """
     Append user information to the CSV file
+    
+    DEPRECATED: Use append_user_info_to_excel instead.
     
     Args:
         user_info (dict): User information from the API

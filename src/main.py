@@ -90,6 +90,11 @@ def main():
         else:
             failed += 1
     
+    # Save Excel file
+    excel_manager = config.get_excel_manager()
+    excel_path = excel_manager.save()
+    logger.info(f"Excel file saved: {excel_path}")
+    
     # Summary
     logger.info(f"Processing complete: {successful} successful, {failed} failed")
 

@@ -20,6 +20,7 @@ import requests
 from urllib.parse import quote
 from typing import Any, Dict, Iterable, List, Tuple, Optional
 import json
+from excel_manager import ExcelManager
 
 API_ROOT = "https://api.github.com"
 SESSION = requests.Session()
@@ -184,9 +185,33 @@ def write_csv(rows: List[Dict[str, str]], path: str) -> str:
     return path
 
 
+def query_github_security_to_excel(owner: str, repo: str, excel_manager, model_name: str) -> None:
+    """
+    Query GitHub repository security information and export to Excel tab.
+    
+    Args:
+        owner: GitHub repository owner
+        repo: GitHub repository name
+        excel_manager: ExcelManager instance
+        model_name: Model name for tab naming
+        
+    Returns:
+        None
+    """
+    rows = collect(owner, repo)
+    
+    # Create tab name
+    tab_name = f"{model_name}_github_security"
+    
+    # Use Excel manager to create the tab
+    excel_manager.create_tab_from_csv_data(tab_name, rows)
+    print(f"GitHub security data written: {len(rows)} rows to Excel tab '{tab_name}'")
+
 def query_github_security(owner: str, repo: str, output_dir: str = "../model_scores") -> str:
     """
     Query GitHub repository security information and export to CSV.
+    
+    DEPRECATED: Use query_github_security_to_excel instead.
     
     Args:
         owner: GitHub repository owner

@@ -12,6 +12,7 @@ import requests
 import csv
 import argparse
 from pathlib import Path
+from excel_manager import ExcelManager
 
 def query_org_overview(org_name):
     """
@@ -153,9 +154,50 @@ def get_all_org_info(org_name):
     
     return all_info
 
+def append_org_info_to_excel(org_info, excel_manager, model_name):
+    """
+    Append organization information to the Excel file as a new tab
+    
+    Args:
+        org_info (dict): Organization information from the API
+        excel_manager (ExcelManager): Excel manager instance
+        model_name (str): Model name for tab naming
+    """
+    if not org_info:
+        return
+    
+    # Create tab name
+    tab_name = f"{model_name}_org_info"
+    
+    # Flatten the organization info for Excel storage
+    flattened_info = {}
+    
+    # Add basic org info
+    flattened_info["org_name"] = org_info.get("org_name", "")
+    
+    # Add overview info if available
+    if org_info.get("overview"):
+        overview = org_info["overview"]
+        for key, value in overview.items():
+            flattened_info[f"overview_{key}"] = value
+    
+    # Add counts for different resource types
+    flattened_info["members_count"] = len(org_info.get("members", [])) if org_info.get("members") else 0
+    flattened_info["models_count"] = len(org_info.get("models", [])) if org_info.get("models") else 0
+    flattened_info["datasets_count"] = len(org_info.get("datasets", [])) if org_info.get("datasets") else 0
+    flattened_info["spaces_count"] = len(org_info.get("spaces", [])) if org_info.get("spaces") else 0
+    
+    # Convert to list format for Excel
+    org_data = [flattened_info]
+    
+    # Use Excel manager to create the tab
+    excel_manager.create_tab_from_csv_data(tab_name, org_data)
+
 def append_org_info_to_csv(org_info, csv_file_path):
     """
     Append organization information to the CSV file
+    
+    DEPRECATED: Use append_org_info_to_excel instead.
     
     Args:
         org_info (dict): Organization information from the API

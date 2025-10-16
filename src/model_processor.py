@@ -7,10 +7,10 @@ import logging
 import requests
 from pathlib import Path
 from typing import Tuple, Optional
-from hf_model_query import get_model_info, export_model_info_to_csv
-from hf_user_query import query_user_overview, append_user_info_to_csv
-from hf_org_query import get_all_org_info, append_org_info_to_csv
-from gh_sec2 import query_github_security
+from hf_model_query import get_model_info, export_model_info_to_excel
+from hf_user_query import query_user_overview, append_user_info_to_excel
+from hf_org_query import get_all_org_info, append_org_info_to_excel
+from gh_sec2 import query_github_security_to_excel
 from config import Config
 
 
@@ -74,7 +74,7 @@ class ModelProcessor:
                 return False
             
             # Process GitHub security information
-            if not self._process_github_security(github_repo):
+            if not self._process_github_security(github_repo, hf_model_name):
                 self.logger.warning(f"GitHub security processing failed for {github_repo}")
                 # Don't return False here as HF processing succeeded
             
@@ -94,31 +94,33 @@ class ModelProcessor:
             bool: True if successful, False otherwise
         """
         try:
+            # Get Excel manager
+            excel_manager = self.config.get_excel_manager()
+            
             # Get model information
             info = get_model_info(hf_model_name)
             self.logger.info(f"Retrieved model info: {info.modelId}, SHA: {info.sha}")
             
-            # Extract owner and export model info
+            # Extract owner and export model info to Excel
             owner_name = hf_model_name.split('/')[0]
-            csv_path = self.config.get_model_csv_path(owner_name)
-            export_model_info_to_csv(info, str(csv_path))
-            self.logger.info(f"Model information exported to {csv_path}")
+            export_model_info_to_excel(info, excel_manager, hf_model_name)
+            self.logger.info(f"Model information exported to Excel tab: {hf_model_name}_model_info")
             
             # Get and append owner information (user or organization)
             if self._is_organization(owner_name):
                 self.logger.info(f"Detected {owner_name} as organization")
                 owner_info = get_all_org_info(owner_name)
                 if owner_info:
-                    append_org_info_to_csv(owner_info, str(csv_path))
-                    self.logger.info("Organization information appended to CSV")
+                    append_org_info_to_excel(owner_info, excel_manager, hf_model_name)
+                    self.logger.info("Organization information appended to Excel")
                 else:
                     self.logger.warning("Failed to retrieve HuggingFace organization information")
             else:
                 self.logger.info(f"Detected {owner_name} as user")
                 user_info = query_user_overview(owner_name)
                 if user_info:
-                    append_user_info_to_csv(user_info, str(csv_path))
-                    self.logger.info("User information appended to CSV")
+                    append_user_info_to_excel(user_info, excel_manager, hf_model_name)
+                    self.logger.info("User information appended to Excel")
                 else:
                     self.logger.warning("Failed to retrieve HuggingFace user information")
             
@@ -128,11 +130,12 @@ class ModelProcessor:
             self.logger.error(f"Error processing HuggingFace model {hf_model_name}: {e}")
             return False
     
-    def _process_github_security(self, github_repo: str) -> bool:
+    def _process_github_security(self, github_repo: str, hf_model_name: str) -> bool:
         """Process GitHub security information.
         
         Args:
             github_repo: GitHub repository name in format "owner/repo"
+            hf_model_name: HuggingFace model name for tab naming
             
         Returns:
             bool: True if successful, False otherwise
@@ -143,8 +146,9 @@ class ModelProcessor:
                 return False
             
             owner, repo = github_repo.split('/', 1)
-            security_csv_path = query_github_security(owner, repo)
-            self.logger.info(f"GitHub security information exported to {security_csv_path}")
+            excel_manager = self.config.get_excel_manager()
+            query_github_security_to_excel(owner, repo, excel_manager, hf_model_name)
+            self.logger.info(f"GitHub security information exported to Excel tab: {hf_model_name}_github_security")
             return True
             
         except Exception as e:
